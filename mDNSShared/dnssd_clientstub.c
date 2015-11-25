@@ -269,6 +269,7 @@ static int more_bytes(dnssd_sock_t sd)
 		fs = (fd_set *)calloc(nints, sizeof(int));
 		if (fs == NULL) { syslog(LOG_WARNING, "dnssd_clientstub more_bytes: malloc failed"); return 0; }
 		}
+        if (sd < 0) { syslog(LOG_WARNING, "dnssd_clientstub more_bytes: socket closed???"); return 0; }
 	FD_SET(sd, fs);
 	ret = select((int)sd+1, fs, (fd_set*)NULL, (fd_set*)NULL, &tv);
 	if (fs != &readfds) free(fs);
@@ -295,6 +296,7 @@ static int wait_for_daemon(dnssd_sock_t sock, int timeout)
 		fd_set set;
 
 		FD_ZERO(&set);
+                if (sock < 0) { syslog(LOG_WARNING, "dnssd_clientstub wait_for_daemon: sock err ??"); return kDNSServiceErr_Unknown; }
 		FD_SET(sock, &set);
 		tv.tv_sec = timeout;
 		tv.tv_usec = 0;
